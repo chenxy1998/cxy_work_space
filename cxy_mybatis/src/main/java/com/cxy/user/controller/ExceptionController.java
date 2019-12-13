@@ -3,6 +3,7 @@ package com.cxy.user.controller;
 import com.cxy.user.entity.ResponseEntity;
 import com.cxy.utils.UnauthorizedException;
 import org.apache.shiro.ShiroException;
+import org.apache.shiro.authc.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -41,5 +42,14 @@ public class ExceptionController {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
         return HttpStatus.valueOf(statusCode);
+    }
+
+
+
+    //捕捉realm的异常
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity handlAuthenticationException(ShiroException e) {
+        return new ResponseEntity(401, e.getMessage(), null);
     }
 }

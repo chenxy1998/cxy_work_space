@@ -1,12 +1,15 @@
 package com.cxy.utils;
 
-import com.cxy.shiro.MyRealm;
+import com.cxy.user.entity.ResponseEntity;
+import com.google.gson.Gson;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
+import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +18,7 @@ import java.io.IOException;
 
 public class JWTFilter extends BasicHttpAuthenticationFilter {
 
-    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private static Logger logger = LoggerFactory.getLogger(JWTFilter.class);
 
     /**
      * 判断用户是否想要登入。
@@ -23,9 +26,37 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
-        HttpServletRequest req = (HttpServletRequest) request;
-        String authorization = req.getHeader("Authorization");
-        return authorization != null;
+
+
+        if (!isLoginAttempt(request)) {
+            // 没有携带Token
+            HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
+            // 获取当前请求类型
+            String httpMethod = httpServletRequest.getMethod();
+            // 获取当前请求URI
+            String requestURI = httpServletRequest.getRequestURI();
+            logger.info("当前请求 {} Authorization属性(Token)为空 请求类型 {}", requestURI, httpMethod);
+            // mustLoginFlag = true 开启任何请求必须登录才可访问
+            Boolean mustLoginFlag = true;
+            if (mustLoginFlag) {
+                out((HttpServletResponse) response, new ResponseEntity(401, "请先登录", null));
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * @description 检测Header里面是否包含Authorization字段，有就进行Token登录认证授权
+     * @author 王栋
+     * @date 2019/9/24 19:07
+     * @param request
+     * @return java.lang.Boolean
+     **/
+    private Boolean isLoginAttempt(ServletRequest request) {
+        String token = this.getAuthzHeader(request);
+        return token != null;
     }
 
     /**
@@ -58,7 +89,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             try {
                 executeLogin(request, response);
             } catch (Exception e) {
-                response401(request, response);
+                out((HttpServletResponse) response,new ResponseEntity(401, e.getMessage(), null));
             }
         }
         return true;
@@ -82,15 +113,31 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         return super.preHandle(request, response);
     }
 
+
+
     /**
-     * 将非法请求跳转到 /401
+     *  使用response输出JSON
+     * @param response
      */
-    private void response401(ServletRequest req, ServletResponse resp) {
+    public static void out(HttpServletResponse response, Object object){
+
+        ServletOutputStream out = null;
         try {
-            HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
-            httpServletResponse.sendRedirect("/401");
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json;charset=UTF-8");
+            out = response.getOutputStream();
+            out.write(new Gson().toJson(object).getBytes("UTF-8"));
+        } catch (Exception e) {
+            logger.error(e + "输出JSON出错");
+        } finally{
+            if(out!=null){
+                try {
+                    out.flush();
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
