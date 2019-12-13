@@ -47,6 +47,9 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     }
 
 
+
+
+
     /**
      * @description 检测Header里面是否包含Authorization字段，有就进行Token登录认证授权
      * @author 王栋
@@ -112,8 +115,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         }
         return super.preHandle(request, response);
     }
-
-
 
     /**
      *  使用response输出JSON
