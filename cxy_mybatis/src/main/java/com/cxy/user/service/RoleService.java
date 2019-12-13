@@ -7,4 +7,6 @@ import java.util.Set;
 public interface RoleService {
 
     Set<String> getRoles(String username);
+
+    RoleEntity queryRoleName(String userName);
 }

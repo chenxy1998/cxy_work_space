@@ -64,4 +64,16 @@
         WHERE
             u.user_name = #{userName}
     </select>
+
+    <select id="queryPermissionName" resultType="com.cxy.user.entity.PermissionEntity">
+        SELECT
+            p.permission_name as permissionName
+        FROM
+            t_user u
+            LEFT JOIN t_role r ON u.role_id = r.id
+            LEFT JOIN t_permission p ON r.id = p.role_id
+        WHERE
+            u.user_name = #{userName}
+    </select>
+
 </mapper>

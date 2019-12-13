@@ -2,6 +2,7 @@ package com.cxy.user.service.impl;
 
 import com.cxy.user.dao.PermissionDao;
 import com.cxy.user.dao.RoleDao;
+import com.cxy.user.entity.PermissionEntity;
 import com.cxy.user.service.PermissionService;
 import com.cxy.user.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,5 +20,10 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public Set<String> getPermissions(String userName) {
         return permissionDao.getPermissions(userName);
+    }
+
+    @Override
+    public PermissionEntity queryPermissionName(String userName) {
+        return permissionDao.queryPermissionName(userName);
     }
 }

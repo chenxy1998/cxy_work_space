@@ -23,4 +23,9 @@ public class RoleServiceImpl implements RoleService {
     public Set<String> getRoles(String userName) {
         return roleDao.getRoles(userName);
     }
+
+    @Override
+    public RoleEntity queryRoleName(String userName) {
+        return roleDao.queryRoleName(userName);
+    }
 }

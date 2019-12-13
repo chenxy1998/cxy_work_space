@@ -11,4 +11,5 @@ public interface RoleDao {
 
     Set<String> getRoles(String userName);
 
+    RoleEntity queryRoleName(String userName);
 }
