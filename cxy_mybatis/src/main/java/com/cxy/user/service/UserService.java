@@ -7,4 +7,6 @@ import java.util.List;
 public interface UserService {
 
     UserEntity queryUser(UserEntity userEntity);
+
+    UserEntity getByUserName(String userName);
 }

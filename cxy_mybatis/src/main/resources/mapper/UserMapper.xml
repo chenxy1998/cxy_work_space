@@ -2,7 +2,72 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cxy.user.dao.UserDao">
 
-    <select id="queryUser" resultType="UserEntity">
-        select * from t_user
+    <resultMap type="com.cxy.user.entity.UserEntity" id="userMap">
+        <result property="id" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="passWord" column="pass_word"/>
+        <result property="roleId" column="role_id"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        <![CDATA[
+        id,user_name, pass_word, role_id
+        ]]>
+    </sql>
+
+
+    <sql id="findPage_where">
+        <where>
+            <if test="id != null and id!=''">
+                AND id=#{id}
+            </if>
+            <if test="userName != null and userName!=''">
+                AND user_name=#{userName}
+            </if>
+            <if test="passWord != null and passWord!=''">
+                AND pass_word=#{passWord}
+            </if>
+            <if test="roleId != null and roleId!=''">
+                AND role_id = #{roleId}
+            </if>
+        </where>
+    </sql>
+
+
+    <sql id="update_sql">
+        <set>
+            <if test="id != null and id!=''">
+                id=#{id},
+            </if>
+            <if test="userName != null and userName!=''">
+                user_name=#{userName},
+            </if>
+            <if test="passWord != null and passWord!=''">
+                pass_word=#{passWord},
+            </if>
+            <if test="roleId != null and roleId!=''">
+                role_id = #{roleId}
+            </if>
+        </set>
+    </sql>
+
+    <select id="queryUser" resultMap="userMap">
+        SELECT
+        <include refid="columns"/>
+        FROM t_user
+        <include refid="findPage_where"/>
     </select>
+
+
+
+    <select id="getByUserName" resultMap="userMap">
+        SELECT
+            *
+        FROM
+            t_user
+        WHERE
+            user_name = #{userName}
+    </select>
+
 </mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cxy.user.dao.PermissionDao">
+
+    <resultMap type="com.cxy.user.entity.PermissionEntity" id="permissionMap">
+        <result property="id" column="id"/>
+        <result property="permissionName" column="permission_Name"/>
+        <result property="roleId" column="role_id"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        <![CDATA[
+        id,permission_Name, role_id
+        ]]>
+    </sql>
+
+
+    <sql id="findPage_where">
+        <where>
+            <if test="id != null">
+                AND id=#{id}
+            </if>
+            <if test="permissionName != null">
+                AND permission_Name=#{permissionName}
+            </if>
+            <if test="roleId != null">
+                AND role_id = #{roleId}
+            </if>
+        </where>
+    </sql>
+
+
+    <sql id="update_sql">
+        <set>
+            <if test="id != null">
+                id=#{id},
+            </if>
+            <if test="permissionName != null">
+                permission_Name=#{permissionName},
+            </if>
+            <if test="roleId != null">
+                role_id = #{roleId}
+            </if>
+        </set>
+    </sql>
+
+    <select id="queryPermission" resultMap="permissionMap">
+        SELECT
+        <include refid="columns"/>
+        FROM t_permission
+        <include refid="findPage_where"/>
+    </select>
+
+
+
+    <select id="getPermissions" resultType="java.lang.String">
+        SELECT
+            p.permission_name
+        FROM
+            t_user u
+            LEFT JOIN t_role r ON u.role_id = r.id
+            LEFT JOIN t_permission p ON r.id = p.role_id
+        WHERE
+            u.user_name = #{userName}
+    </select>
+</mapper>

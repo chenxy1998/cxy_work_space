@@ -8,7 +8,8 @@ import org.apache.ibatis.type.Alias;
 public class UserEntity {
 
     private Integer id;
-    private String name;
-    private Integer sex;
+    private String userName;
+    private String passWord;
+    private Integer roleId;
 
 }

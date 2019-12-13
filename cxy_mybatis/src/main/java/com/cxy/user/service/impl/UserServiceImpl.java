@@ -27,4 +27,9 @@ public class UserServiceImpl implements UserService {
         System.out.println(redisService.get("bbb"));
         return userEntitys;
     }
+
+    @Override
+    public UserEntity getByUserName(String userName) {
+        return userDao.getByUserName(userName);
+    }
 }
